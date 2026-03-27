@@ -2,90 +2,6 @@ import streamlit as st
 
 st.set_page_config(page_title="Deep Research Agent", page_icon="🔬", layout="wide")
 
-st.title("🔬 Deep Research Agent")
-st.markdown("Comprehensive research and analysis tools powered by AI templates")
-
-st.sidebar.title("Template Selection")
-st.sidebar.markdown("---")
-
-templates = {
-    "Literature Review Assistant": {
-        "icon": "📚",
-        "description": "Generate comprehensive literature reviews on any topic",
-    },
-    "Competitive Analysis Tool": {
-        "icon": "🔍",
-        "description": "Analyze and compare competitors in any industry",
-    },
-    "Market Research Generator": {
-        "icon": "📊",
-        "description": "Generate comprehensive market research reports",
-    },
-    "Academic Paper Analyzer": {
-        "icon": "📄",
-        "description": "Extract and analyze key information from research papers",
-    },
-    "Trend Analysis Dashboard": {
-        "icon": "📈",
-        "description": "Analyze and predict industry trends",
-    },
-    "SEO Content Research": {
-        "icon": "🔍",
-        "description": "Research and optimize content for search engines",
-    },
-    "Due Diligence Research": {
-        "icon": "⚖️",
-        "description": "Conduct comprehensive due diligence for investments",
-    },
-    "Technical Documentation Research": {
-        "icon": "📚",
-        "description": "Research and analyze technical documentation",
-    },
-    "Consumer Behavior Analysis": {
-        "icon": "🛒",
-        "description": "Analyze consumer patterns and behavior",
-    },
-    "Patent Research Tool": {
-        "icon": "💡",
-        "description": "Research and analyze patents for innovation",
-    },
-}
-
-selected = st.sidebar.radio(
-    "Select a Template",
-    options=list(templates.keys()),
-    format_func=lambda x: f"{templates[x]['icon']} {x}",
-    index=0,
-)
-
-st.sidebar.markdown("---")
-st.sidebar.markdown("### About")
-st.sidebar.info(
-    "This app provides 10 research templates that work without requiring an API key. "
-    "Each template generates comprehensive analysis based on your inputs."
-)
-
-if selected == "Literature Review Assistant":
-    _render_literature_review()
-elif selected == "Competitive Analysis Tool":
-    _render_competitive_analysis()
-elif selected == "Market Research Generator":
-    _render_market_research()
-elif selected == "Academic Paper Analyzer":
-    _render_academic_paper()
-elif selected == "Trend Analysis Dashboard":
-    _render_trend_analysis()
-elif selected == "SEO Content Research":
-    _render_seo_research()
-elif selected == "Due Diligence Research":
-    _render_due_diligence()
-elif selected == "Technical Documentation Research":
-    _render_technical_docs()
-elif selected == "Consumer Behavior Analysis":
-    _render_consumer_behavior()
-elif selected == "Patent Research Tool":
-    _render_patent_research()
-
 
 def _render_literature_review():
     st.header("📚 Literature Review Assistant")
@@ -969,3 +885,78 @@ def _render_patent_research():
                     st.markdown("- File provisional applications quickly")
                     st.markdown("- Consider acquisition of expiring patents")
                     st.markdown("- Build portfolio around AI applications")
+
+
+st.title("🔬 Deep Research Agent")
+st.markdown("Comprehensive research and analysis tools powered by AI templates")
+
+st.sidebar.title("Template Selection")
+st.sidebar.markdown("---")
+
+templates = {
+    "Literature Review Assistant": {
+        "icon": "📚",
+        "description": "Generate comprehensive literature reviews",
+    },
+    "Competitive Analysis Tool": {
+        "icon": "🔍",
+        "description": "Analyze and compare competitors",
+    },
+    "Market Research Generator": {
+        "icon": "📊",
+        "description": "Generate market research reports",
+    },
+    "Academic Paper Analyzer": {"icon": "📄", "description": "Analyze research papers"},
+    "Trend Analysis Dashboard": {
+        "icon": "📈",
+        "description": "Analyze industry trends",
+    },
+    "SEO Content Research": {"icon": "🔍", "description": "SEO content optimization"},
+    "Due Diligence Research": {
+        "icon": "⚖️",
+        "description": "Due diligence for investments",
+    },
+    "Technical Documentation Research": {
+        "icon": "📚",
+        "description": "Research technical docs",
+    },
+    "Consumer Behavior Analysis": {
+        "icon": "🛒",
+        "description": "Analyze consumer patterns",
+    },
+    "Patent Research Tool": {"icon": "💡", "description": "Research patents for IP"},
+}
+
+selected = st.sidebar.radio(
+    "Select a Template",
+    options=list(templates.keys()),
+    format_func=lambda x: f"{templates[x]['icon']} {x}",
+    index=0,
+)
+
+st.sidebar.markdown("---")
+st.sidebar.markdown("### About")
+st.sidebar.info(
+    "This app provides 10 research templates that work without requiring an API key."
+)
+
+if selected == "Literature Review Assistant":
+    _render_literature_review()
+elif selected == "Competitive Analysis Tool":
+    _render_competitive_analysis()
+elif selected == "Market Research Generator":
+    _render_market_research()
+elif selected == "Academic Paper Analyzer":
+    _render_academic_paper()
+elif selected == "Trend Analysis Dashboard":
+    _render_trend_analysis()
+elif selected == "SEO Content Research":
+    _render_seo_research()
+elif selected == "Due Diligence Research":
+    _render_due_diligence()
+elif selected == "Technical Documentation Research":
+    _render_technical_docs()
+elif selected == "Consumer Behavior Analysis":
+    _render_consumer_behavior()
+elif selected == "Patent Research Tool":
+    _render_patent_research()

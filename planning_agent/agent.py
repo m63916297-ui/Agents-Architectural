@@ -3,61 +3,28 @@ from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain.schema import HumanMessage, SystemMessage
-from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
-from typing import List, Dict
 
 load_dotenv()
 
 
 class PlanningAgent:
     """
-    Planning Agent - Arquitectura con Planificación
+    Planning Agent - Arquitectura con Planificacion
 
-    Este agente implementa capacidades de planificación de tareas,
+    Este agente implementa capacidades de planificacion de tareas,
     dividiendo objetivos complejos en sub-metas y pasos ejecutables.
-
-    Arquitectura:
-    ┌─────────────────┐
-    │  Objetivo       │
-    │  Principal      │
-    └────────┬────────┘
-             ▼
-    ┌─────────────────┐
-    │   PLANNER       │◄──── Plan-and-Solve
-    │   Module        │
-    └────────┬────────┘
-             ▼
-    ┌─────────────────┐
-    │  Sub-metas      │
-    │  (Descomposición)│
-    └────────┬────────┘
-             ▼
-    ┌─────────────────┐
-    │  Plan de        │
-    │  Ejecución      │
-    └────────┬────────┘
-             ▼
-    ┌─────────────────┐
-    │  Ejecución      │
-    │  Secuencial     │
-    └─────────────────┘
     """
 
     def __init__(self, model_name: str = "gpt-4", temperature: float = 0.3):
-        self.llm = ChatOpenAI(
-            model_name=model_name,
-            temperature=temperature,
-            streaming=True,
-            callbacks=[StreamingStdOutCallbackHandler()],
-        )
+        self.llm = ChatOpenAI(model_name=model_name, temperature=temperature)
 
-        self.system_prompt = """Eres un asistente de IA especializado en planificación y descomposición de tareas.
-Tu objetivo es transformar objetivos complejos en planes de acción estructurados.
+        self.system_prompt = """Eres un asistente de IA especializado en planificacion y descomposicion de tareas.
+Tu objetivo es transformar objetivos complejos en planes de accion estructurados.
 
-Metodología:
+Metodologia:
 1. ENTENDER: Comprende el objetivo final
 2. DESCOMPONER: Divide en sub-metas manejables
-3. ORDENAR: Establece dependencias y orden lógico
+3. ORDENAR: Establece dependencias y orden logico
 4. EJECUTAR: Completa cada paso secuencialmente
 5. VERIFICAR: Confirma el cumplimiento del objetivo"""
 
@@ -67,31 +34,31 @@ Metodología:
 
 Analiza este objetivo y crea un plan detallado:
 
-## 1. ANÁLISIS DEL OBJETIVO
-¿Qué exactamente se necesita lograr?
+## 1. ANALISIS DEL OBJETIVO
+Que exactamente se necesita lograr?
 
-## 2. DESCOMPOSICIÓN EN SUB-METAS
+## 2. DESCOMPOSICION EN SUB-METAS
 Lista las sub-metas necesarias (usa formato numerado):
 1. 
 2. 
 3.
 
-## 3. ORDEN DE EJECUCIÓN
+## 3. ORDEN DE EJECUCION
 Especifica el orden y dependencias entre sub-metas:
 
-## 4. PLAN DE ACCIÓN
+## 4. PLAN DE ACCION
 Para cada sub-meta, indica:
-- Qué hacer
+- Que hacer
 - Recursos necesarios
 - Tiempo estimado
 
-## 5. VERIFICACIÓN
-¿Cómo sabremos que el objetivo se cumplió?
+## 5. VERIFICACION
+Como sabremos que el objetivo se cumplio?
 
 Plan:""",
         )
 
-    def create_plan(self, goal: str) -> Dict:
+    def create_plan(self, goal: str) -> dict:
         """Crea un plan estructurado para alcanzar un objetivo"""
         messages = [
             SystemMessage(content=self.system_prompt),
@@ -107,18 +74,18 @@ Plan:""",
 
 {plan}
 
-Para cada paso completado, indícalo con ✓"""
+Para cada paso completado, indicarlo con marca de verificacion."""
 
         messages = [
             SystemMessage(
-                content="Eres un executor de planes metódico. Ejecuta cada paso del plan."
+                content="Eres un executor de planes metodico. Ejecuta cada paso del plan."
             ),
             HumanMessage(content=execution_prompt),
         ]
         response = self.llm.invoke(messages)
         return response.content
 
-    def plan_and_execute(self, goal: str) -> Dict:
+    def plan_and_execute(self, goal: str) -> dict:
         """Planifica y ejecuta un objetivo completo"""
         plan_result = self.create_plan(goal)
         execution_result = self.execute_plan(plan_result["plan"])
@@ -130,13 +97,13 @@ Para cada paso completado, indícalo con ✓"""
             "status": "completed",
         }
 
-    def run(self, goal: str) -> Dict:
+    def run(self, goal: str) -> dict:
         return self.plan_and_execute(goal)
 
 
 if __name__ == "__main__":
     agent = PlanningAgent()
-    print("Planning Agent - Descomposición y planificación de tareas")
+    print("Planning Agent - Descomposicion y planificacion de tareas")
     print("Escribe 'salir' para terminar\n")
 
     while True:

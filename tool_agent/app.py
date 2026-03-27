@@ -1,5 +1,4 @@
 import streamlit as st
-import os
 from dotenv import load_dotenv
 from agent import ToolAgent, get_current_time, search_wikipedia, calculate
 
@@ -22,13 +21,13 @@ st.markdown("### Herramientas Disponibles")
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.metric("🕐", "Tiempo Actual")
+    st.markdown("#### 🕐 Tiempo Actual")
     if st.button("Obtener Tiempo"):
         result = get_current_time()
         st.info(f"Hora actual: {result}")
 
 with col2:
-    st.metric("📚", "Wikipedia")
+    st.markdown("#### 📚 Wikipedia")
     wiki_query = st.text_input("Buscar:", key="wiki")
     if st.button("Buscar Wikipedia") and wiki_query:
         with st.spinner("Buscando..."):
@@ -36,8 +35,8 @@ with col2:
         st.markdown(result)
 
 with col3:
-    st.metric("🔢", "Calculadora")
-    calc_expr = st.text_input("Expresión:", key="calc")
+    st.markdown("#### 🔢 Calculadora")
+    calc_expr = st.text_input("Expresion:", key="calc")
     if st.button("Calcular") and calc_expr:
         result = calculate(calc_expr)
         st.info(result)
@@ -63,13 +62,13 @@ if prompt := st.chat_input("Escribe tu pregunta..."):
 
 st.markdown("---")
 st.markdown("""
-### 📖 Acerca de este Agente
+### Acerca de este Agente
 
 **Arquitectura:** ReAct (Reasoning + Acting)
 
 Este agente implementa el ciclo ReAct:
 
-1. **THOUGHT**: ¿Qué necesito hacer?
+1. **THOUGHT**: Que necesito hacer?
 2. **ACTION**: Seleccionar herramienta
 3. **OBSERVATION**: Analizar resultado
 4. **RESPONSE**: Responder
@@ -79,5 +78,5 @@ Este agente implementa el ciclo ReAct:
 - Wikipedia Search
 - Calculadora
 
-**Referencia:** "ReAct: Synergizing Reasoning and Acting in Language Models" - Arxiv 2210.03629
+**Referencia:** "ReAct: Synergizing Reasoning and Acting" - Arxiv 2210.03629
 """)

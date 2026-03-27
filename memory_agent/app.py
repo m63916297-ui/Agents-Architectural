@@ -1,5 +1,4 @@
 import streamlit as st
-import os
 from dotenv import load_dotenv
 from agent import MemoryAgent
 
@@ -17,9 +16,9 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 st.markdown("---")
-st.markdown("### Configuración")
+st.markdown("### Configuracion")
 model = st.selectbox("Modelo:", ["gpt-4", "gpt-3.5-turbo"])
-memory_limit = st.slider("Límite de memoria (intercambios):", 5, 20, 10)
+memory_limit = st.slider("Limite de memoria (intercambios):", 5, 20, 10)
 
 if st.button("Actualizar Agente"):
     st.session_state.agent = MemoryAgent(model_name=model, memory_limit=memory_limit)
@@ -32,7 +31,7 @@ with col1:
         if history:
             st.session_state.show_memory = True
         else:
-            st.info("Memoria vacía")
+            st.info("Memoria vacia")
 
 with col2:
     if st.button("🗑️ Limpiar Memoria"):
@@ -45,7 +44,7 @@ if st.session_state.get("show_memory", False):
     history = st.session_state.agent.get_memory()
     for i, msg in enumerate(history):
         role = "👤" if msg["role"] == "user" else "🤖"
-        st.markdown(f"{role} **:** {msg['content'][:200]}...")
+        st.markdown(f"{role}: {msg['content'][:200]}...")
 
 st.markdown("---")
 st.markdown("### Chat Conversacional")
@@ -68,15 +67,15 @@ if prompt := st.chat_input("Escribe tu mensaje..."):
 
 st.markdown("---")
 st.markdown("""
-### 📖 Acerca de este Agente
+### Acerca de este Agente
 
 **Arquitectura:** Conversation Memory
 
-Este agente implementa gestión de memoria:
+Este agente implementa gestion de memoria:
 
-- **Short-term:** Mantiene historial de conversación reciente
-- **Contextual:** Recuerda información de mensajes previos
-- **Límite:** Limita memoria para eficiencia
+- **Short-term:** Mantiene historial de conversacion reciente
+- **Contextual:** Recuerda informacion de mensajes previos
+- **Limite:** Limita memoria para eficiencia
 
 **Referencia:** "MemGPT: Towards LLMs as Operating Systems" - Arxiv 2310.08560
 """)

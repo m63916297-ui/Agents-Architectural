@@ -1,5 +1,4 @@
 import streamlit as st
-import os
 from dotenv import load_dotenv
 from agent import ResearchAgent
 
@@ -14,21 +13,21 @@ if "agent" not in st.session_state:
     st.session_state.agent = ResearchAgent()
 
 st.markdown("---")
-st.markdown("### Configuración")
+st.markdown("### Configuracion")
 model = st.selectbox("Modelo:", ["gpt-4", "gpt-3.5-turbo"])
 
 st.markdown("---")
-st.markdown("### Investigación")
+st.markdown("### Investigacion")
 
 topic = st.text_input(
-    "Tema de investigación:",
-    placeholder="Ej: Impacto del cambio climático en la agricultura...",
+    "Tema de investigacion:",
+    placeholder="Ej: Impacto del cambio climatico en la agricultura...",
 )
 
 col1, col2 = st.columns(2)
 
 with col1:
-    deep = st.checkbox("Investigación profunda")
+    deep = st.checkbox("Investigacion profunda")
 
 with col2:
     search = st.button("🔍 Investigar", use_container_width=True)
@@ -36,9 +35,9 @@ with col2:
 if search and topic:
     results = st.session_state.agent.research(topic, deep)
 
-    st.success("¡Investigación completada!")
+    st.success("¡Investigacion completada!")
 
-    st.markdown("### 📊 Reporte de Investigación")
+    st.markdown("### 📊 Reporte de Investigacion")
     st.markdown(results["report"])
 
     if results["sources"]:
@@ -50,15 +49,15 @@ if search and topic:
 
 st.markdown("---")
 st.markdown("""
-### 📖 Acerca de este Agente
+### Acerca de este Agente
 
 **Arquitectura:** Research Agent / Agentic RAG
 
-Este agente implementa investigación automatizada:
+Este agente implementa investigacion automatizada:
 
-1. **Búsqueda**: Explora múltiples fuentes
-2. **Extracción**: Recopila información relevante
-3. **Síntesis**: Genera reportes estructurados
+1. **Busqueda**: Explora multiples fuentes
+2. **Extraccion**: Recopila informacion relevante
+3. **Sintesis**: Genera reportes estructurados
 
-**Referencia:** "OpenResearcher: Unleashing AI for Accelerated Scientific Research" - Arxiv 2408.06941
+**Referencia:** "OpenResearcher" - Arxiv 2408.06941
 """)

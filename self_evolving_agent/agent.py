@@ -3,57 +3,21 @@ from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 from langchain.schema import HumanMessage, SystemMessage
 from langchain.memory import ConversationBufferMemory
-from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
-from typing import List, Dict
+from typing import Optional
 
 load_dotenv()
 
 
 class SelfEvolvingAgent:
     """
-    Self-Evolving Agent - Arquitectura con Auto-Evolución
+    Self-Evolving Agent - Arquitectura con Auto-Evolucion
 
     Este agente implementa capacidades de auto-mejora basadas en
-    retroalimentación y aprendizaje de interacciones pasadas.
-
-    Arquitectura:
-    ┌─────────────────┐
-    │  User Input      │
-    └────────┬────────┘
-             ▼
-    ┌─────────────────┐
-    │   EXECUTE        │◄──── Ejecución normal
-    │   (Ejecución)   │
-    └────────┬────────┘
-             ▼
-    ┌─────────────────┐
-    │   EVALUATE       │◄──── Auto-evaluación
-    │   (Evaluación)  │
-    └────────┬────────┘
-             ▼
-    ┌─────────────────┐
-    │   LEARN          │◄──── Aprende de errores
-    │   (Aprendizaje) │
-    └────────┬────────┘
-             ▼
-    ┌─────────────────┐
-    │   UPDATE         │◄──── Mejora prompts/memory
-    │   (Actualizar)  │
-    └────────┬────────┘
-             ▼
-    ┌─────────────────┐
-    │   EVOLVED        │
-    │   AGENT         │
-    └─────────────────┘
+    retroalimentacion y aprendizaje de interacciones pasadas.
     """
 
     def __init__(self, model_name: str = "gpt-4", temperature: float = 0.7):
-        self.llm = ChatOpenAI(
-            model_name=model_name,
-            temperature=temperature,
-            streaming=True,
-            callbacks=[StreamingStdOutCallbackHandler()],
-        )
+        self.llm = ChatOpenAI(model_name=model_name, temperature=temperature)
 
         self.memory = ConversationBufferMemory(
             memory_key="history", return_messages=True
@@ -63,10 +27,9 @@ class SelfEvolvingAgent:
         self.interaction_count = 0
 
         self.system_prompt = """Eres un asistente de IA que aprende y evoluciona.
-Después de cada interacción, evaluarás tu desempeño y te mejorarás."""
+Despues de cada interaccion, evaluaras tu desempeno y te mejoraras."""
 
     def execute(self, user_input: str) -> str:
-        """Ejecuta una interacción normal"""
         history = self.memory.load_memory_variables({}).get("history", [])
 
         messages = [
@@ -78,22 +41,19 @@ Después de cada interacción, evaluarás tu desempeño y te mejorarás."""
         response = self.llm.invoke(messages)
         return response.content
 
-    def evaluate_response(self, user_input: str, response: str) -> Dict:
-        """Evalúa la calidad de su propia respuesta"""
-        evaluation_prompt = f"""Evalúa la calidad de esta respuesta:
+    def evaluate_response(self, user_input: str, response: str) -> dict:
+        evaluation_prompt = f"""Evalua la calidad de esta respuesta:
 
 Pregunta: {user_input}
 Respuesta: {response}
 
-En una escala de 1-10, evalúa:
+En una escala de 1-10, evalua:
 1. Relevancia
-2. Precisión
+2. Precision
 3. Claridad
 4. Utilidad
 
-¿Hubo algún error o área de mejora?
-
-Evalúa en formato JSON:"""
+Evaluacion:"""
 
         messages = [
             SystemMessage(content="Eres un evaluador de respuestas."),
@@ -104,21 +64,17 @@ Evalúa en formato JSON:"""
 
         return {
             "evaluation": evaluation,
-            "needs_improvement": "áreas de mejora" in evaluation.lower()
+            "needs_improvement": "area de mejora" in evaluation.lower()
             or "error" in evaluation.lower(),
         }
 
     def learn_from_feedback(self, user_input: str, response: str, feedback: str) -> str:
-        """Aprende de la retroalimentación del usuario"""
-        learning_prompt = f"""Analiza esta retroalimentación y genera una mejora:
+        learning_prompt = f"""Analiza esta retroalimentacion y genera una mejora:
 
-Interacción:
+Interaccion:
 - Pregunta: {user_input}
 - Tu respuesta: {response}
-- Retroalimentación: {feedback}
-
-¿Qué aprendiste de esta retroalimentación?
-¿Cómo mejorarás tu respuesta en el futuro?
+- Retroalimentacion: {feedback}
 
 Aprendizaje:"""
 
@@ -130,30 +86,18 @@ Aprendizaje:"""
         learning = self.llm.invoke(messages).content
         self.learned_improvements.append(learning)
 
-        improvement_note = f"""
-        --- MEJORA APRENDIDA ---
-        {learning}
-        """
-
+        improvement_note = f"\n--- MEJORA APRENDIDA ---\n{learning}\n"
         self.system_prompt += improvement_note
 
         return learning
 
     def reflect_on_performance(self) -> str:
-        """Reflexiona sobre su desempeño general"""
-        reflection_prompt = f"""Reflexiona sobre tu desempeño en esta sesión:
+        reflection_prompt = f"""Reflexiona sobre tu desempeno en esta sesion:
 
-Número de interacciones: {self.interaction_count}
+Numero de interacciones: {self.interaction_count}
 Mejoras aprendidas: {len(self.learned_improvements)}
 
-Últimas mejoras:
-{chr(10).join(self.learned_improvements[-3:])}
-
-¿Qué has mejorado?
-¿En qué áreas sigues teniendo dificultades?
-¿Qué consejos tienes para ti mismo?
-
-Reflexión:"""
+Reflexion:"""
 
         messages = [
             SystemMessage(content="Eres un agente reflexivo."),
@@ -162,8 +106,7 @@ Reflexión:"""
 
         return self.llm.invoke(messages).content
 
-    def run(self, user_input: str, user_feedback: str = None) -> Dict:
-        """Ejecuta una interacción completa con auto-evolución"""
+    def run(self, user_input: str, user_feedback: Optional[str] = None) -> dict:
         response = self.execute(user_input)
         evaluation = self.evaluate_response(user_input, response)
 
@@ -187,49 +130,47 @@ Reflexión:"""
 
         return result
 
-    def get_evolution_status(self) -> Dict:
-        """Obtiene el estado de evolución del agente"""
+    def get_evolution_status(self) -> dict:
         return {
             "interactions": self.interaction_count,
             "improvements_count": len(self.learned_improvements),
-            "recent_improvements": self.learned_improvements[-3:],
+            "recent_improvements": self.learned_improvements[-3:]
+            if self.learned_improvements
+            else [],
             "system_prompt_length": len(self.system_prompt),
         }
 
 
 if __name__ == "__main__":
     agent = SelfEvolvingAgent()
-    print("Self-Evolving Agent - Agente con auto-evolución")
-    print(
-        "Comandos: 'feedback <texto>' = dar retroalimentación, 'status' = ver estado, 'salir' = terminar\n"
-    )
+    print("Self-Evolving Agent - Agente con auto-evolucion")
+    print("Escribe 'salir' para terminar\n")
 
     pending_feedback = None
 
     while True:
-        user_input = input("\nTú: ")
+        user_input = input("\nTu: ")
 
         if user_input.lower() == "salir":
             break
 
         if user_input.lower().startswith("feedback "):
             pending_feedback = user_input[9:]
-            print("Retroalimentación guardada para la próxima interacción.")
+            print("Retroalimentacion guardada.")
             continue
 
         if user_input.lower() == "status":
             status = agent.get_evolution_status()
-            print(f"\n=== ESTADO DE EVOLUCIÓN ===")
+            print(f"\n=== ESTADO DE EVOLUCION ===")
             print(f"Interacciones: {status['interactions']}")
             print(f"Mejoras aprendidas: {status['improvements_count']}")
             continue
 
-        print("\nAgente: ", end="")
         result = agent.run(user_input, pending_feedback)
+        print(f"\nAgente: {result['response']}")
 
-        if pending_feedback:
+        if result.get("learning"):
             print(f"\n[Aprendizaje: {result['learning'][:100]}...]")
-            pending_feedback = None
 
-        if "reflection" in result:
-            print(f"\n[Reflexión: {result['reflection'][:100]}...]")
+        if result.get("reflection"):
+            print(f"\n[Reflexion: {result['reflection'][:100]}...]")

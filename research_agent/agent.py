@@ -3,78 +3,40 @@ import requests
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 from langchain.schema import HumanMessage, SystemMessage
-from langchain.prompts import PromptTemplate
-from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
-from typing import List, Dict
 
 load_dotenv()
 
 
 class ResearchAgent:
     """
-    Research Agent - Arquitectura de Agente de Investigación
+    Research Agent - Arquitectura de Agente de Investigacion
 
-    Este agente implementa capacidades de búsqueda y síntesis de información
-    para investigación académica y análisis profundo.
-
-    Arquitectura:
-    ┌─────────────────┐
-    │  Topic/Query     │
-    └────────┬────────┘
-             ▼
-    ┌─────────────────┐
-    │   WEB SEARCH      │◄──── SerpAPI / Wikipedia
-    │   (Búsqueda)      │
-    └────────┬────────┘
-             ▼
-    ┌─────────────────┐
-    │   WEB SCRAPER    │◄──── BeautifulSoup
-    │   (Extracción)   │
-    └────────┬────────┘
-             ▼
-    ┌─────────────────┐
-    │   INFORMATION    │
-    │   PROCESSING     │
-    └────────┬────────┘
-             ▼
-    ┌─────────────────┐
-    │   SYNTHESIS      │◄──── LLM
-    │   (Síntesis)     │
-    └────────┬────────┘
-             ▼
-    ┌─────────────────┐
-    │   RESEARCH       │
-    │   REPORT        │
-    └─────────────────┘
+    Este agente implementa capacidades de busqueda y sintesis de informacion
+    para investigacion academica y analisis profundo.
     """
 
     def __init__(self, model_name: str = "gpt-4", temperature: float = 0.3):
-        self.llm = ChatOpenAI(
-            model_name=model_name,
-            temperature=temperature,
-            streaming=True,
-            callbacks=[StreamingStdOutCallbackHandler()],
-        )
+        self.llm = ChatOpenAI(model_name=model_name, temperature=temperature)
 
-        self.system_prompt = """Eres un asistente de investigación experto.
+        self.system_prompt = """Eres un asistente de investigacion experto.
 Tu rol es:
-- Buscar información relevante de múltiples fuentes
+- Buscar informacion relevante de multiples fuentes
 - Analizar y sintetizar datos
 - Proporcionar un reporte estructurado con citas
-- Mantener objectivity y precisión
+- Mantener objetividad y precision
 
 Formato del reporte:
 1. RESUMEN EJECUTIVO
 2. ANTECEDENTES
 3. HALLAZGOS PRINCIPALES
-4. ANÁLISIS
+4. ANALISIS
 5. CONCLUSIONES
 6. FUENTES"""
 
-    def search_wikipedia(self, query: str) -> List[Dict]:
+    def search_wikipedia(self, query: str) -> list:
         """Busca en Wikipedia"""
         try:
-            url = f"https://en.wikipedia.org/w/api.php"
+            url = "https://en.wikipedia.org/w/api.php"
             params = {
                 "action": "query",
                 "list": "search",
@@ -98,24 +60,14 @@ Formato del reporte:
         except Exception as e:
             return [{"error": str(e)}]
 
-    def search_news(self, query: str) -> List[Dict]:
-        """Busca noticias recientes (simulado)"""
-        return [
-            {
-                "title": f"Noticia sobre {query}",
-                "source": "NewsAPI",
-                "date": "2026-03-27",
-            }
-        ]
-
-    def synthesize_information(self, topic: str, sources_data: List[str]) -> str:
-        """Sintetiza información de múltiples fuentes"""
+    def synthesize_information(self, topic: str, sources_data: list) -> str:
+        """Sintetiza informacion de multiples fuentes"""
         synthesis_prompt = f"""Tema: {topic}
 
-Información recopilada:
+Informacion recopilada:
 {chr(10).join(sources_data)}
 
-Genera un reporte de investigación estructurado siguiendo el formato estándar."""
+Genera un reporte de investigacion estructurado siguiendo el formato estandar."""
 
         messages = [
             SystemMessage(content=self.system_prompt),
@@ -124,8 +76,8 @@ Genera un reporte de investigación estructurado siguiendo el formato estándar.
 
         return self.llm.invoke(messages).content
 
-    def research(self, topic: str, deep: bool = False) -> Dict:
-        """Ejecuta investigación completa"""
+    def research(self, topic: str, deep: bool = False) -> dict:
+        """Ejecuta investigacion completa"""
         results = {"topic": topic, "sources": [], "report": ""}
 
         wiki_results = self.search_wikipedia(topic)
@@ -139,23 +91,23 @@ Genera un reporte de investigación estructurado siguiendo el formato estándar.
 
         return results
 
-    def run(self, topic: str, deep: bool = False) -> Dict:
+    def run(self, topic: str, deep: bool = False) -> dict:
         return self.research(topic, deep)
 
 
 if __name__ == "__main__":
     agent = ResearchAgent()
-    print("Research Agent - Agente de Investigación")
+    print("Research Agent - Agente de Investigacion")
     print("Escribe 'salir' para terminar\n")
 
     while True:
-        topic = input("\nTema de investigación: ")
+        topic = input("\nTema de investigacion: ")
         if topic.lower() == "salir":
             break
 
         results = agent.research(topic)
 
-        print("\n=== REPORTE DE INVESTIGACIÓN ===")
+        print("\n=== REPORTE DE INVESTIGACION ===")
         print(results["report"])
         print("\n--- FUENTES ---")
         for src in results["sources"]:

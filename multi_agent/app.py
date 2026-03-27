@@ -1,8 +1,7 @@
 import streamlit as st
-import os
 from dotenv import load_dotenv
-from agent import MultiAgentSystem, ResearchAgent, AnalysisAgent, CreativeAgent
 from langchain_openai import ChatOpenAI
+from agent import MultiAgentSystem
 
 load_dotenv()
 
@@ -21,7 +20,7 @@ if "multi_agent" not in st.session_state:
     st.session_state.multi_agent = MultiAgentSystem()
 
 st.markdown("---")
-st.markdown("### Configuración")
+st.markdown("### Configuracion")
 model = st.selectbox("Modelo:", ["gpt-4", "gpt-3.5-turbo"])
 
 use_all = st.checkbox("Usar todos los agentes", value=True)
@@ -33,11 +32,11 @@ col1, col2, col3 = st.columns(3)
 
 with col1:
     st.markdown("#### 📚 Investigador")
-    st.info("Busca y analiza información de fuentes relevantes")
+    st.info("Busca y analiza informacion de fuentes relevantes")
 
 with col2:
     st.markdown("#### 📊 Analista")
-    st.info("Identifica patrones y evalúa alternativas")
+    st.info("Identifica patrones y evalua alternativas")
 
 with col3:
     st.markdown("#### 💡 Creador")
@@ -48,7 +47,7 @@ st.markdown("### Consulta")
 
 query = st.text_area(
     "Ingresa tu consulta o problema:",
-    placeholder="Ej: ¿Cuáles son las tendencias en IA para 2025?",
+    placeholder="Ej: Cuales son las tendencias en IA para 2025?",
     height=100,
 )
 
@@ -68,22 +67,22 @@ if st.button("🚀 Ejecutar Sistema Multi-Agente", use_container_width=True) and
         with st.expander("💡 Resultado del Creador"):
             st.markdown(results["agents"]["creative"])
 
-    st.markdown("### ✅ Síntesis Final")
+    st.markdown("### ✅ Sintesis Final")
     st.markdown(results["synthesis"])
 
 st.markdown("---")
 st.markdown("""
-### 📖 Acerca de este Sistema
+### Acerca de este Sistema
 
 **Arquitectura:** Multi-Agent System
 
-Este sistema coordina múltiples agentes especializados:
+Este sistema coordina multiples agentes especializados:
 
-1. **Investigador**: Busca y analiza información
-2. **Analista**: Evalúa patrones y alternativas
+1. **Investigador**: Busca y analiza informacion
+2. **Analista**: Evalua patrones y alternativas
 3. **Creador**: Genera ideas innovadoras
 
 Los agentes colaboran para proporcionar soluciones integrales.
 
-**Referencia:** "CAMEL: Communicative Agents for Mind Exploration" - Arxiv 2303.17760
+**Referencia:** "CAMEL: Communicative Agents" - Arxiv 2303.17760
 """)

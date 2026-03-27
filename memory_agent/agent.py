@@ -1,45 +1,18 @@
 import os
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
-from langchain.schema import HumanMessage, SystemMessage, AIMessage
-from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain.schema import HumanMessage, SystemMessage
 from langchain.memory import ConversationBufferMemory
-from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
-from typing import List, Dict
 
 load_dotenv()
 
 
 class MemoryAgent:
     """
-    Memory Agent - Arquitectura con Gestión de Memoria
+    Memory Agent - Arquitectura con Gestion de Memoria
 
-    Este agente implementa gestión de memoria conversacional,
-    permitiendo mantener contexto a través de múltiples interacciones.
-
-    Arquitectura:
-    ┌─────────────────┐
-    │  User Input     │
-    └────────┬────────┘
-             ▼
-    ┌─────────────────┐
-    │    MEMORIA      │◄──── Conversation History
-    │  (Buffer)       │
-    └────────┬────────┘
-             ▼
-    ┌─────────────────┐
-    │   LLM (GPT-4)   │
-    │  + Contexto      │
-    └────────┬────────┘
-             ▼
-    ┌─────────────────┐
-    │  Respuesta       │
-    └────────┬────────┘
-             ▼
-    ┌─────────────────┐
-    │  Guardar en     │
-    │  Memoria         │
-    └─────────────────┘
+    Este agente implementa gestion de memoria conversacional,
+    permitiendo mantener contexto a traves de multiples interacciones.
     """
 
     def __init__(
@@ -48,12 +21,7 @@ class MemoryAgent:
         temperature: float = 0.7,
         memory_limit: int = 10,
     ):
-        self.llm = ChatOpenAI(
-            model_name=model_name,
-            temperature=temperature,
-            streaming=True,
-            callbacks=[StreamingStdOutCallbackHandler()],
-        )
+        self.llm = ChatOpenAI(model_name=model_name, temperature=temperature)
 
         self.memory = ConversationBufferMemory(
             memory_key="chat_history", return_messages=True, output_key="response"
@@ -61,31 +29,23 @@ class MemoryAgent:
 
         self.memory_limit = memory_limit
 
-        self.system_prompt = """Eres un asistente de IA con memoria conversacional.
-Puedes recordar contexto de conversaciones anteriores en esta sesión.
+        self.system_prompt = f"""Eres un asistente de IA con memoria conversacional.
+Puedes recordar contexto de conversaciones anteriores en esta sesion.
 
-Características:
-- Recuerdas el contexto previo de la conversación
+Caracteristicas:
+- Recuerdas el contexto previo de la conversacion
 - Mantienes coherencia en conversaciones largas
-- Puedes referenciar información mencionada anteriormente
-- Olvidas información muy antigua (>{} intercambios) para mantener eficiencia
-
-""".format(memory_limit)
+- Puedes referenciar informacion mencionada anteriormente
+- Olvidas informacion muy antigua (mas de {memory_limit} intercambios) para mantener eficiencia"""
 
     def chat(self, user_input: str) -> str:
-        messages = [
-            SystemMessage(content=self.system_prompt),
-            *self.memory.load_memory_variables({}).get("chat_history", []),
-        ]
+        messages = [SystemMessage(content=self.system_prompt)]
 
-        chat_prompt = ChatPromptTemplate.from_messages(messages)
-        prompt_with_history = chat_prompt.append(HumanMessage(content=user_input))
+        history = self.memory.load_memory_variables({}).get("chat_history", [])
+        messages.extend(history)
+        messages.append(HumanMessage(content=user_input))
 
-        response = self.llm.invoke(
-            [SystemMessage(content=self.system_prompt)]
-            + self.memory.load_memory_variables({}).get("chat_history", [])
-            + [HumanMessage(content=user_input)]
-        )
+        response = self.llm.invoke(messages)
 
         self.memory.save_context(
             {"user_input": user_input}, {"response": response.content}
@@ -96,24 +56,21 @@ Características:
         return response.content
 
     def _trim_memory(self):
-        """Mantiene la memoria dentro del límite permitido"""
+        """Mantiene la memoria dentro del limite permitido"""
         history = self.memory.chat_memory.messages
         if len(history) > self.memory_limit * 2:
             self.memory.chat_memory.messages = history[-self.memory_limit * 2 :]
 
-    def get_memory(self) -> List[Dict]:
-        """Obtiene el historial de conversación"""
+    def get_memory(self) -> list:
+        """Obtiene el historial de conversacion"""
         history = self.memory.load_memory_variables({}).get("chat_history", [])
         return [
-            {
-                "role": "user" if isinstance(m, HumanMessage) else "assistant",
-                "content": m.content,
-            }
-            for m in history
+            {"role": "user" if i % 2 == 0 else "assistant", "content": msg.content}
+            for i, msg in enumerate(history)
         ]
 
     def clear_memory(self):
-        """Limpia el historial de conversación"""
+        """Limpia el historial de conversacion"""
         self.memory.clear()
         return "Memoria limpiada exitosamente"
 
@@ -123,13 +80,13 @@ Características:
 
 if __name__ == "__main__":
     agent = MemoryAgent()
-    print("Memory Agent - Conversación con memoria")
+    print("Memory Agent - Conversacion con memoria")
     print(
         "Comandos: 'memoria' = ver historial, 'limpiar' = borrar memoria, 'salir' = terminar\n"
     )
 
     while True:
-        user_input = input("\nTú: ")
+        user_input = input("\nTu: ")
         if user_input.lower() == "salir":
             break
         elif user_input.lower() == "memoria":
@@ -140,5 +97,4 @@ if __name__ == "__main__":
         elif user_input.lower() == "limpiar":
             print(agent.clear_memory())
         else:
-            print("\nAgente: ", end="")
-            agent.run(user_input)
+            print("\nAgente:", agent.run(user_input))

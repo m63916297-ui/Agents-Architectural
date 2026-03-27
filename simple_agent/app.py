@@ -1,5 +1,4 @@
 import streamlit as st
-import os
 from dotenv import load_dotenv
 from agent import SimpleAgent
 
@@ -8,7 +7,7 @@ load_dotenv()
 st.set_page_config(page_title="Simple Agent", page_icon="🤖")
 
 st.title("🤖 Simple Agent")
-st.markdown("**Arquitectura:** Single-Agent (Básico)")
+st.markdown("**Arquitectura:** Single-Agent (Basico)")
 
 if "agent" not in st.session_state:
     st.session_state.agent = SimpleAgent()
@@ -17,7 +16,7 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 st.markdown("---")
-st.markdown("### Configuración")
+st.markdown("### Configuracion")
 model = st.selectbox("Modelo:", ["gpt-4", "gpt-3.5-turbo"])
 temp = st.slider("Temperatura:", 0.0, 1.0, 0.7, 0.1)
 
@@ -38,29 +37,24 @@ if prompt := st.chat_input("Escribe tu mensaje..."):
         st.markdown(prompt)
 
     with st.chat_message("assistant"):
-        response_container = st.empty()
-        full_response = ""
-
         with st.spinner("Pensando..."):
             response = st.session_state.agent.run(prompt)
-            full_response = response
+        st.markdown(response)
 
-        response_container.markdown(full_response)
-
-    st.session_state.messages.append({"role": "assistant", "content": full_response})
+    st.session_state.messages.append({"role": "assistant", "content": response})
 
 st.markdown("---")
 st.markdown("""
-### 📖 Acerca de este Agente
+### Acerca de este Agente
 
 **Arquitectura:** Single-Agent
 
-Este agente implementa el patrón más básico de agente de IA:
+Este agente implementa el patron mas basico de agente de IA:
 - **Entrada:** Mensaje del usuario
 - **Proceso:** LLM (GPT-4/GPT-3.5) con prompt de sistema
 - **Salida:** Respuesta del modelo
 
 **Componentes:**
-- `agent.py`: Lógica del agente
+- `agent.py`: Logica del agente
 - `app.py`: Interfaz Streamlit
 """)

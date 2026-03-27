@@ -1,5 +1,4 @@
 import streamlit as st
-import os
 from dotenv import load_dotenv
 from agent import PlanningAgent
 
@@ -14,7 +13,7 @@ if "agent" not in st.session_state:
     st.session_state.agent = PlanningAgent()
 
 st.markdown("---")
-st.markdown("### Configuración")
+st.markdown("### Configuracion")
 model = st.selectbox("Modelo:", ["gpt-4", "gpt-3.5-turbo"])
 temp = st.slider("Temperatura:", 0.0, 1.0, 0.3, 0.1)
 
@@ -23,11 +22,11 @@ if st.button("Actualizar Agente"):
     st.success("Agente actualizado!")
 
 st.markdown("---")
-st.markdown("### Planificación de Tareas")
+st.markdown("### Planificacion de Tareas")
 
 goal = st.text_area(
     "Objetivo a planificar:",
-    placeholder="Ej: Crear una aplicación web de gestión de tareas con Python y Flask...",
+    placeholder="Ej: Crear una aplicacion web de gestion de tareas con Python y Flask...",
     height=100,
 )
 
@@ -54,18 +53,18 @@ if plan_and_execute and goal:
     st.markdown("### 📋 Plan")
     st.markdown(result["plan"])
 
-    st.markdown("### ⚡ Ejecución")
+    st.markdown("### ⚡ Ejecucion")
     st.markdown(result["execution"])
 
     st.success("Objetivo completado!")
 
 st.markdown("---")
 st.markdown("""
-### 📖 Acerca de este Agente
+### Acerca de este Agente
 
 **Arquitectura:** Plan-and-Solve / Task Decomposition
 
-Este agente implementa capacidades de planificación:
+Este agente implementa capacidades de planificacion:
 
 1. **ENTENDER**: Comprende el objetivo final
 2. **DESCOMPONER**: Divide en sub-metas manejables

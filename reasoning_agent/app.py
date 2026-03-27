@@ -1,5 +1,4 @@
 import streamlit as st
-import os
 from dotenv import load_dotenv
 from agent import ReasoningAgent
 
@@ -17,11 +16,11 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 st.markdown("---")
-st.markdown("### Configuración")
-model = st.selectbox("Modelo:", ["gpt-4", "gpt-3.5-turbo"], key="model")
-temp = st.slider("Temperatura:", 0.0, 1.0, 0.3, 0.1, key="temp")
+st.markdown("### Configuracion")
+model = st.selectbox("Modelo:", ["gpt-4", "gpt-3.5-turbo"])
+temp = st.slider("Temperatura:", 0.0, 1.0, 0.3, 0.1)
 
-if st.button("Actualizar Agente", key="update"):
+if st.button("Actualizar Agente"):
     st.session_state.agent = ReasoningAgent(model_name=model, temperature=temp)
     st.success("Agente actualizado!")
 
@@ -51,17 +50,17 @@ col1, col2 = st.columns(2)
 with col1:
     problem = st.text_area(
         "Problema:",
-        placeholder="Ej: Si tengo 5 manzanas y compro 3 más...",
+        placeholder="Ej: Si tengo 5 manzanas y compro 3 mas...",
         key="problem",
     )
 with col2:
     domain = st.selectbox(
         "Dominio:",
-        ["general", "matemáticas", "lógica", "ciencia", "negocios"],
+        ["general", "matematicas", "logica", "ciencia", "negocios"],
         key="domain",
     )
 
-if st.button("Razonar Estructuradamente", key="structured"):
+if st.button("Razonar Estructuradamente"):
     if problem:
         with st.spinner("Analizando..."):
             result = st.session_state.agent.reason_about_problem(problem, domain)
@@ -73,16 +72,16 @@ if st.button("Razonar Estructuradamente", key="structured"):
 
 st.markdown("---")
 st.markdown("""
-### 📖 Acerca de este Agente
+### Acerca de este Agente
 
 **Arquitectura:** Chain-of-Thought (CoT)
 
 Este agente implementa capacidades de razonamiento paso a paso:
 
-1. **ANALIZAR**: Entiende exactamente qué se pregunta
-2. **RAZONAR**: Divide el problema en pasos lógicos  
+1. **ANALIZAR**: Entiende exactamente que se pregunta
+2. **RAZONAR**: Divide el problema en pasos logicos  
 3. **RESOLVER**: Ejecuta cada paso mostrando el proceso
 4. **CONCLUIR**: Resume la respuesta final
 
-**Referencia:** "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models" - Arxiv 2201.11903
+**Referencia:** "Chain-of-Thought Prompting Elicits Reasoning" - Arxiv 2201.11903
 """)
